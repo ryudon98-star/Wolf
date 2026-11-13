@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0f24">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<title>人狼</title>
+<style>
+:root{--bgn:url(bg-night.jpg);--bgd:url(bg-day.jpg);--bg:#0a0f24;--cd:#151c3d;--ac:#f3c969;--rd:#e5484d;--tx:#eef0ff;--mt:#9aa3cf;--ln:#2b3566}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 80% -5%,#27306b 0,var(--bg) 55%) fixed;color:var(--tx);font-family:"Hiragino Sans","Yu Gothic",sans-serif;padding:calc(env(safe-area-inset-top,0px) + 12px) 14px calc(env(safe-area-inset-bottom,0px) + 30px)}
+h1{font-size:23px;margin:4px 0 12px;color:var(--ac);letter-spacing:.08em}
+h2{margin:6px 0}h3{margin:0 0 8px;color:var(--ac);font-size:16px}
+.card{background:var(--cd);border:1px solid var(--ln);border-radius:16px;padding:14px;margin-bottom:12px}
+.ctr{text-align:center;padding:30px 14px}
+button{background:linear-gradient(135deg,#f3c969,#d99a2b);color:#2a1d00;border:0;border-radius:12px;padding:13px 16px;font-size:16px;font-weight:700;width:100%;margin-top:6px}
+button.g{background:#0d1230;color:var(--tx);border:1px solid var(--ln)}
+button.on{background:linear-gradient(135deg,#7c8cff,#4f5fd6);color:#fff;border-color:#7c8cff}
+button:disabled{opacity:.35}
+button:active{transform:scale(.97)}
+input{width:100%;background:#0d1230;color:var(--tx);border:1px solid var(--ln);border-radius:10px;padding:11px;font-size:16px;margin-top:8px}
+.mt{color:var(--mt);font-size:13px;margin:3px 0}
+.ro{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed var(--ln)}
+.st{display:flex;align-items:center;gap:12px;flex:none}
+.st button{width:38px;height:38px;padding:0;margin:0;font-size:20px}
+.st b{min-width:34px;text-align:center}
+.ok{color:#6ee7a0}.ng{color:var(--rd)}
+.big{font-size:34px;font-weight:800;text-align:center;color:var(--ac);padding:14px 0}
+.moon{font-size:56px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid button{margin:0}
+.tm{font-size:64px;text-align:center;font-weight:800;color:var(--ac);font-variant-numeric:tabular-nums}
+.ln{padding:10px 12px;border-radius:10px;background:#0d1230;margin-top:8px;line-height:1.6}
+.win{font-size:20px;text-align:center;padding:12px;border-radius:12px;background:linear-gradient(135deg,#3b2f08,#6b4d0c);color:#ffe49a;margin-bottom:8px;font-weight:800}
+.rs{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed var(--ln);gap:8px;font-size:14px}
+.tag{font-size:12px;padding:2px 8px;border-radius:10px;background:#2b3566}.tag.w{background:#2e6b43}.tag.l{background:#5a2b33}
+summary{color:var(--mt);padding:6px 0}
+#rl{position:fixed;inset:0;background:#0a0f24;z-index:10;overflow:auto;padding:calc(env(safe-area-inset-top,0px) + 14px) 14px 40px;display:none}
+#rl.on{display:block}
+.ibtn{margin-top:12px}
+body{background:none}
+#sky{position:fixed;inset:0;z-index:-1;overflow:hidden}
+#sky .nt,#sky .dy{position:absolute;inset:0;transition:opacity 1.2s}
+#sky .nt{background:var(--bgn) center bottom/cover no-repeat,radial-gradient(ellipse at 80% -5%,#27306b 0,#0a0f24 55%)}
+#sky .dy{background:var(--bgd) center bottom/cover no-repeat,linear-gradient(#4f9cf0,#ffd6a0 88%);opacity:0}
+#sky.bg #stars,#sky.bg .orb{display:none}
+h1{text-shadow:0 2px 10px #000a}
+.mi{height:150px;border-radius:12px;overflow:hidden;margin-bottom:8px;display:flex;align-items:center;justify-content:center}
+.mi img{width:100%;height:100%;object-fit:cover}
+body.day #sky .dy{opacity:1}
+#stars{transition:opacity 1.2s}body.day #stars{opacity:0}
+#stars i{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;animation:tw 3s infinite ease-in-out}
+@keyframes tw{50%{opacity:.15}}
+.orb{position:absolute;right:26px;top:calc(env(safe-area-inset-top,0px) + 24px);width:54px;height:54px;border-radius:50%;background:#f3e6b3;box-shadow:0 0 30px #f3e6b3aa;transition:all 1.2s;animation:fl 6s infinite ease-in-out}
+body.day .orb{background:#ffd54a;box-shadow:0 0 44px #ffcc33}
+@keyframes fl{50%{transform:translateY(8px)}}
+.fl{perspective:900px;max-width:420px;margin:0 auto 12px}
+.fi{position:relative;aspect-ratio:4/3;transition:transform .7s;transform-style:preserve-3d}
+.fl.on .fi{transform:rotateY(180deg)}
+.ff{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;overflow:hidden;border:2px solid var(--ac);box-shadow:0 0 24px #f3c96955;background:#10183a}
+.fr{transform:rotateY(180deg)}
+.ff img{width:100%;height:100%;object-fit:cover;display:block}
+.cap{position:absolute;left:0;right:0;bottom:0;padding:26px 10px 10px;text-align:center;font-weight:800;font-size:22px;background:linear-gradient(transparent,#000c);color:#ffe49a}
+.th{width:56px;height:42px;border-radius:8px;object-fit:cover;flex:none;background:#10183a}
+.lb{background:#0d1230;border:1px solid var(--ln);border-radius:10px;padding:8px 12px;font-size:14px;color:var(--tx)}
+.bn{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#ffe49a;background:#0009;z-index:30;animation:bn 1.6s forwards;pointer-events:none}
+@keyframes bn{0%{opacity:0}20%,70%{opacity:1}100%{opacity:0}}
+.cf{position:fixed;top:-30px;font-size:24px;z-index:25;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+.tm.hot{color:#e5484d;animation:pl .5s infinite alternate}
+@keyframes pl{to{transform:scale(1.12)}}
+.win{animation:gl 1.4s infinite alternate}
+@keyframes gl{to{box-shadow:0 0 28px #f3c969}}
+.bk{width:auto;padding:8px 14px;font-size:14px;margin:0 0 8px}
+</style></head><body>
+<div id="sky"><div class="nt"></div><div class="dy"></div><div id="stars"></div><div class="orb"></div></div>
+<div id="app"></div>
+<div id="rl"></div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const vib=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
+const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
+let AC;function beep(f,d){if(!cfg.snd)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;g.gain.value=.15;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.stop(AC.currentTime+d)}catch(e){}}
+function banner(t){const e=document.createElement('div');e.className='bn';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),1700)}
+function conf(){const E=['✨','🌟','🎉','🌙','⭐'];for(let i=0;i<40;i++){const e=document.createElement('span');e.className='cf';e.textContent=E[i%5];e.style.left=Math.random()*100+'%';e.style.animationDuration=(2+Math.random()*2.5)+'s';e.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),5500)}}
+(function(){const s=$('#stars');for(let i=0;i<70;i++){const e=document.createElement('i');e.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*3}s`;s.appendChild(e)}})();
+
+/* ===== ワンナイト人狼：データ ===== */
+const RL=[
+['doppel','ドッペルゲンガー','V',1,'最初に他の1人のカードを見て、その役職になる。夜の行動も引き継ぐ。'],
+['wolf','人狼','W',2,'仲間の人狼を確認。ひとりなら中央のカードを1枚見られる（設定でON/OFF）。'],
+['mad','狂人（人狼を知る）','M',1,'人狼が誰か確認できる（公式の子分）。人狼側で勝つ。人狼は狂人が誰か分からない。'],
+['mad2','狂人（人狼を知らない）','M',1,'行動なし。人狼が誰か知らないまま人狼側で勝つ。'],
+['mason','フリーメイソン','V',2,'もう1人のフリーメイソンを確認する。1枚だけなら相方は中央にいる。'],
+['seer','占い師','V',1,'誰か1人のカード、または中央のカード2枚を見る。'],
+['rob','怪盗','V',1,'誰かと自分のカードを交換し、新しいカードを見る。'],
+['trb','騒ぎ屋','V',1,'自分以外の2人のカードを、見ずに交換する。'],
+['drk','酔っぱらい','V',1,'自分のカードを中央の1枚と、見ずに交換する。'],
+['mayor','村長','V',1,'昼の処刑で2票分として数えられる（オリジナル役職）。'],
+['hun','狩人','V',1,'処刑されたら、自分が投票した相手も道連れ。'],
+['tan','吊り人','T',1,'処刑されれば勝ち。人狼が処刑されなければ人狼側は負け。'],
+['vil','村人','V',3,'行動なし。話し合いで人狼を見つける。']];
+const RK={};RL.forEach(r=>RK[r[0]]=r);
+const PRE={3:{wolf:2,seer:1,rob:1,trb:1,vil:1},4:{wolf:2,seer:1,rob:1,trb:1,vil:2},5:{wolf:2,seer:1,rob:1,trb:1,drk:1,vil:2},6:{wolf:2,seer:1,rob:1,trb:1,drk:1,vil:3},7:{wolf:2,seer:1,rob:1,trb:1,drk:1,hun:1,vil:3},8:{wolf:2,seer:1,rob:1,trb:1,drk:1,hun:1,tan:1,vil:3},9:{wolf:2,seer:1,rob:1,trb:1,drk:1,hun:1,tan:1,mad:1,vil:3}};
+const pre=(n,c)=>{const p={...PRE[n]};if(c==2)p.vil--;if(!p.vil)delete p.vil;return p};
+let cfg=load('ow1',null)||{n:5,cnt:{...PRE[5]},names:[],min:5};
+cfg.cc=cfg.cc||3;if(cfg.snd===undefined)cfg.snd=true;if(cfg.lone===undefined)cfg.lone=true;
+if(cfg.cnt.ins){cfg.cnt.vil=Math.min(3,(cfg.cnt.vil||0)+cfg.cnt.ins);delete cfg.cnt.ins}
+Object.keys(cfg.cnt).forEach(k=>{if(!RK[k])delete cfg.cnt[k]});
+const sv=()=>{try{localStorage.setItem('ow1',JSON.stringify(cfg))}catch(e){}};
+const DESC={
+doppel:{t:'コピーした役職の陣営',a:'夜の最初に他の1人のカードを見て、その役職になります。占い師・怪盗・騒ぎ屋・酔っぱらいになったら、その場ですぐ行動します。人狼・子分・フリーメイソンになったら、その仲間を確認します（元からの仲間には、あなたは見えません）。',w:'コピーした役職の陣営と同じ条件で勝ちます。',c:'見た役職をどう名乗るかが勝負です。誰かに交換されても、カードはドッペルゲンガーのままです。'},
+wolf:{t:'人狼陣営',a:'仲間の人狼が誰か確認します。仲間がいなければ、設定がONのとき、中央のカードを1枚見られます。',w:'人狼が1人も処刑されなければ勝ちです。',c:'村人のふりをしましょう。仲間がいるときは、かばいすぎないのがコツです。'},
+mad:{t:'人狼陣営',a:'夜に人狼が誰か確認できます。人狼のほうは、あなたが誰か分かりません。',w:'人狼が処刑されなければ勝ち。プレイヤーに人狼がいないときは、あなた以外が処刑されれば勝ちです。',c:'自分が処刑されても、人狼が生き残れば勝ちです。偽の占い師になって村を混乱させるのも手です。'},
+mad2:{t:'人狼陣営',a:'夜の行動はありません。人狼が誰か分からないまま、人狼側のつもりで動きます。',w:'人狼が処刑されなければ勝ち。プレイヤーに人狼がいないときは、あなた以外が処刑されれば勝ちです。',c:'誰が人狼か推理しながら、疑われないように話を合わせましょう。'},
+mason:{t:'村人陣営',a:'もう1人のフリーメイソンが誰か確認します。相方がいなければ、中央にいると分かります。',w:'人狼を1人でも処刑すれば勝ちです。',c:'相方は夜の時点では確実な味方です。ただし夜のあとにカードが交換されたかもしれません。'},
+seer:{t:'村人陣営',a:'次のどちらかを選びます。①誰か1人のカードを見る ②中央のカードを2枚見る（+2枚のときは2枚とも）。見るのは夜の最初のカードです。',w:'人狼を1人でも処刑すれば勝ちです。',c:'夜のあとに、怪盗や騒ぎ屋でカードが入れ替わっているかもしれません。'},
+rob:{t:'最後のカードの陣営',a:'誰か1人と自分のカードを交換し、新しく手にしたカードを見ます（見るのは相手の夜の最初のカード）。交換しない選択もできます。',w:'交換後のカードの陣営で決まります。人狼と交換したなら、人狼陣営として勝敗が決まります。',c:'見たカードを元に、自分の立場を話し合いで組み立てましょう。'},
+trb:{t:'村人陣営',a:'自分以外の2人のカードを、中身を見ずに交換します。',w:'人狼を1人でも処刑すれば勝ちです。',c:'誰と誰を交換したかが重要な情報です。自分の行動を話すかどうかも作戦です。'},
+drk:{t:'最後のカードの陣営',a:'自分のカードを、中央の1枚と中身を見ずに交換します。',w:'交換後の新しいカードの陣営で決まります。',c:'自分が今何なのか分かりません。他の人の情報から推理しましょう。'},
+mayor:{t:'村人陣営',a:'夜の行動はありません。',w:'人狼を1人でも処刑すれば勝ちです。',c:'昼の処刑で2票分として数えます。2票を使えるのは、夜のはじめに村長だった人（またはコピーしたドッペルゲンガー）です。'},
+hun:{t:'村人陣営',a:'夜の行動はありません。',w:'人狼を1人でも処刑すれば勝ちです。',c:'処刑されたら、自分が投票した相手も道連れになります。人狼だと思う人に投票しましょう。'},
+tan:{t:'吊り人（単独）',a:'夜の行動はありません。',w:'自分が処刑されれば勝ち。人狼も処刑されていれば村人陣営も勝ち、人狼が処刑されなければ人狼陣営は負けです。',c:'わざと疑われるように振る舞いましょう。ただしやりすぎると本当の人狼が助かります。'},
+vil:{t:'村人陣営',a:'夜の行動はありません。',w:'人狼を1人でも処刑すれば勝ち。プレイヤーに人狼がいないときは、誰も処刑されなければ勝ちです。',c:'情報はなくても、他の人の話の矛盾を見つけることが武器になります。'}};
+const det=k=>{const d=DESC[k];return `<b>陣営</b>：${d.t}<br><b>夜の行動</b>：${d.a}<br><b>勝利条件</b>：${d.w}<br><b>コツ</b>：${d.c}`};
+
+/* ===== 普通の人狼：データ ===== */
+const RL2=[
+['wolf','人狼',4,'夜に仲間と相談して、1人を襲撃する。'],
+['mad2','狂人',2,'人狼が誰か知らないが、人狼陣営として勝つ。占われても「人間」と出る。'],
+['vil','村人',9,'夜の行動はない。話し合いで人狼を見つける。'],
+['seer','占い師',2,'毎晩1人を占い、「人狼」か「人間」かを知る。'],
+['medium','霊媒師',1,'毎晩、前日に処刑された人が人狼だったかを知る。'],
+['hun','騎士',1,'毎晩1人を、人狼の襲撃から守る。'],
+['sharer','共有者',2,'初日の夜に、もう1人の共有者が誰か分かる。']];
+const RK2={};RL2.forEach(r=>RK2[r[0]]=r);
+const PRE2={5:{wolf:1,mad2:1,seer:1,vil:2},6:{wolf:1,mad2:1,seer:1,hun:1,vil:2},7:{wolf:2,seer:1,medium:1,hun:1,vil:2},8:{wolf:2,mad2:1,seer:1,medium:1,hun:1,vil:2},9:{wolf:2,mad2:1,seer:1,medium:1,hun:1,sharer:2,vil:1},10:{wolf:2,mad2:1,seer:1,medium:1,hun:1,sharer:2,vil:2},11:{wolf:3,mad2:1,seer:1,medium:1,hun:1,sharer:2,vil:2},12:{wolf:3,mad2:1,seer:1,medium:1,hun:1,sharer:2,vil:3}};
+let c2=load('ow2',null)||{n:7,cnt:{...PRE2[7]},names:[],min:5,first:false,sg:false,rg:false};
+const sv2=()=>{try{localStorage.setItem('ow2',JSON.stringify(c2))}catch(e){}};
+const DESC2={
+wolf:{t:'人狼陣営',a:'夜に、襲撃する人を選びます。人狼が複数いて意見が割れたときは、選ばれた中からランダムで決まります。初日の夜に襲撃できるかは、設定で変わります。',w:'人狼の数が、人間（人狼以外。狂人も含む）の数以上になれば勝ちです。',c:'村人のふりをして、占い師や騎士を探しましょう。'},
+mad2:{t:'人狼陣営',a:'夜の行動はありません。人狼が誰か知りません。',w:'人狼陣営が勝てば勝ちです。人数を数えるときは「人間」に入ります。',c:'占い師に占われても「人間」と出ます。人狼を推理して、疑いをそらしましょう。'},
+vil:{t:'村人陣営',a:'夜の行動はありません。',w:'人狼を全員処刑すれば勝ちです。',c:'発言の矛盾を見つけることが武器になります。'},
+seer:{t:'村人陣営',a:'毎晩1人を選び、人狼か人間かを知ります。狂人は「人間」と出ます。',w:'人狼を全員処刑すれば勝ちです。',c:'結果をいつ、どう話すかが勝負です。人狼に狙われやすいので注意しましょう。'},
+medium:{t:'村人陣営',a:'毎晩、前日に処刑された人が人狼だったかを知ります。誰も処刑されなかった日は、何も分かりません。',w:'人狼を全員処刑すれば勝ちです。',c:'占い師の結果と合わせて、処刑が正しかったか確かめられます。'},
+hun:{t:'村人陣営',a:'毎晩1人を、人狼の襲撃から守ります。初期設定では、自分は守れず、連続で同じ人も守れません。',w:'人狼を全員処刑すれば勝ちです。',c:'占い師が名乗り出たら、その人を守るのが定番です。'},
+sharer:{t:'村人陣営',a:'初日の夜に、もう1人の共有者が誰か分かります。夜の行動はありません。',w:'人狼を全員処刑すれば勝ちです。',c:'2人は確実な味方です。協力して村をまとめましょう。'}};
+const det2=k=>{const d=DESC2[k];return `<b>陣営</b>：${d.t}<br><b>夜の行動</b>：${d.a}<br><b>勝利条件</b>：${d.w}<br><b>コツ</b>：${d.c}`};
+
+/* ===== 画像 ===== */
+const EM={doppel:['👥','#5b4a8a'],wolf:['🐺','#7a1f2a'],mad:['🐾','#7a1f2a'],mad2:['🤪','#7a1f2a'],mason:['🔨','#2f5d8a'],seer:['🔮','#3b3f9a'],rob:['🥷','#2f5d8a'],trb:['🎭','#8a5a2f'],drk:['🍺','#8a6a1f'],mayor:['👑','#8a6a1f'],hun:['🏹','#2f6a3a'],tan:['🃏','#8a6a1f'],vil:['🧑‍🌾','#2f5d8a'],medium:['👻','#4a3f8a'],sharer:['🤝','#2f6a7a'],back:['🌙','#27306b'],bgn:['🌙','#27306b'],bgd:['☀️','#4f9cf0'],mode1:['🌙','#27306b'],mode2:['🐺','#7a1f2a']};
+const SV=k=>{const[e,c]=EM[k];return 'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><radialGradient id="g" cx=".5" cy=".4" r=".8"><stop offset="0" stop-color="${c}"/><stop offset="1" stop-color="#0a0f24"/></radialGradient></defs><rect width="400" height="300" fill="url(#g)"/><text x="200" y="195" font-size="140" text-anchor="middle">${e}</text></svg>`)};
+const IM={};
+const rimg=(k,c)=>`<img class="${c||'ri'}" src="${IM[k]||'img/'+k+'.jpg'}" onerror="this.onerror=null;this.src=SV('${k}')" alt="">`;
+const dbp=new Promise(r=>{try{const q=indexedDB.open('owi',1);q.onupgradeneeded=()=>q.result.createObjectStore('i');q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}catch(e){r(null)}});
+const iPut=async(k,v)=>{const d=await dbp;if(d)d.transaction('i','readwrite').objectStore('i').put(v,k)};
+const iDel=async k=>{const d=await dbp;if(d)d.transaction('i','readwrite').objectStore('i').delete(k)};
+const iLoad=async()=>{const d=await dbp;if(!d)return;return new Promise(r=>{const o=d.transaction('i').objectStore('i').openCursor();o.onsuccess=e=>{const c=e.target.result;if(c){IM[c.key]=c.value;c.continue()}else r()}})};
+const resize=f=>new Promise(res=>{const u=URL.createObjectURL(f),i=new Image();i.onload=()=>{const k=Math.min(1,800/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.85))};i.src=u});
+const KEYS=[...RL.map(r=>r[0]),'medium','sharer','back','mode1','mode2','bgn','bgd'];
+const NM=k=>RK[k]?(k=='hun'?'狩人（普通の人狼では騎士）':k=='mad2'?'狂人（普通の人狼の狂人も）':RK[k][1]):({medium:'霊媒師（普通の人狼）',sharer:'共有者（普通の人狼）',back:'カードの裏面',mode1:'モード選択：ワンナイト人狼',mode2:'モード選択：人狼（複数日）',bgn:'夜の背景（縦長）',bgd:'昼の背景（縦長）'})[k];
+function imgs(){$('#rl').className='on';$('#rl').innerHTML=`<h1>カード画像の設定</h1><div class="card"><p class="mt" style="line-height:1.7">「変更」で、スマホの写真から選んで差し替えられます（このスマホの中に保存）。リポジトリの img フォルダに、下に書いたファイル名で置いても使えます。画像は4:3の横長がきれいに出ます。</p>${KEYS.map(k=>`<div class="ro"><div style="display:flex;gap:10px;align-items:center;flex:1;min-width:0">${rimg(k,'th')}<div><b>${NM(k)}</b><div class="mt">${IM[k]?'変更済み':(k=='bgn'?'bg-night.jpg':k=='bgd'?'bg-day.jpg':'img/'+k+'.jpg')}</div></div></div><div class="st"><label class="lb">変更<input type="file" accept="image/*" hidden onchange="setImg('${k}',this.files[0])"></label>${IM[k]?`<button class="g" style="width:auto;padding:8px 12px;font-size:14px;margin:0" onclick="resetImg('${k}')">戻す</button>`:''}</div></div>`).join('')}</div><button onclick="$('#rl').className='';goTop()">閉じる</button>`}
+async function setImg(k,f){if(!f)return;const d=await resize(f);IM[k]=d;await iPut(k,d);applyBg();imgs()}
+async function resetImg(k){delete IM[k];await iDel(k);applyBg();imgs()}
+function applyBg(){const r=document.documentElement.style;r.setProperty('--bgn',IM.bgn?`url("${IM.bgn}")`:'url(bg-night.jpg)');r.setProperty('--bgd',IM.bgd?`url("${IM.bgd}")`:'url(bg-day.jpg)');const t=new Image(),sk=$('#sky');t.onload=()=>sk.classList.add('bg');t.onerror=()=>sk.classList.remove('bg');t.src=IM.bgn||'bg-night.jpg'}
+const modeImg=(k,e)=>`<div class="mi"><div class="moon">${e}</div><img src="${IM[k]||'img/'+k+'.jpg'}" style="display:none" onload="this.style.display='block';this.previousElementSibling.style.display='none'" onerror="this.style.display='none'"></div>`;
+
+/* ===== 共通 ===== */
+let G=null,H=null,inst=null,tmr=null,TM={end:0,ls:null},OP=null,OP2=null;
+const PN=i=>G.names[i];
+function setSky(){const d=(G&&['day','ex','hun','res'].includes(G.ph))||(H&&['mn','dy','ex2','xr','end'].includes(H.ph));document.body.classList.toggle('day',!!d)}
+function ib(){const b=$('#ib');if(!b)return;const sa=matchMedia('(display-mode: standalone)').matches;b.innerHTML=sa?'':'<button class="ibtn" onclick="install()">📲 アプリをインストール</button>'}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();inst=e;ib()});
+window.addEventListener('appinstalled',()=>{inst=null;ib();banner('インストールしました')});
+async function install(){if(inst){inst.prompt();await inst.userChoice;inst=null;ib()}else if(location.protocol!=='https:')alert('インストールするには、GitHub PagesのURL（https://〜）をChromeで開いてください。ダウンロードしたファイルを直接開いても入りません。');else if(matchMedia('(display-mode: standalone)').matches)alert('すでにアプリとして開いています');else alert('まだインストールできる状態になっていません。ページを再読み込みして10秒ほど待ってから、もう一度押してください。それでも出ない場合は、すでにインストール済みの可能性があります（ホーム画面を確認してください）。')}
+function goTop(){clearInterval(tmr);G=null;H=null;setSky();
+ $('#app').innerHTML=`<h1>🐺 人狼</h1><div id="ib"></div>
+ <div class="card ctr">${modeImg('mode1','🌙')}<h3>ワンナイト人狼</h3><p class="mt">1回の夜で決着。3〜9人</p><button onclick="home()">ワンナイト人狼</button></div>
+ <div class="card ctr">${modeImg('mode2','🐺')}<h3>人狼（複数日）</h3><p class="mt">夜と昼をくり返す、普通の人狼。5〜12人</p><button onclick="home2()">人狼（複数日）</button></div>
+ <button class="g" onclick="imgs()">カード画像の設定</button>`;ib()}
+function pl(i,sel,fn,ex){return `<div class="grid">${G.names.map((n,j)=>j==i&&ex!==false?'':`<button class="g ${sel.includes(j)?'on':''}" onclick="${fn}(${j})">${esc(n)}</button>`).join('')}</div>`}
+function hand(label,name,go){return `<div class="card ctr"><div class="moon">🌙</div><p class="mt">${label}</p><h2>${esc(name)}さん</h2><p class="mt">他の人に画面を見られないようにして、自分の番になったら押してください</p><button onclick="${go}">私は${esc(name)}です</button></div>`}
+function flipHtml(k,name,on){return `<div class="fl ${on?'on':''}" onclick="flipc()"><div class="fi"><div class="ff fb">${rimg('back')}<div class="cap">タップしてカードをめくる</div></div><div class="ff fr">${rimg(k)}<div class="cap">${name}</div></div></div></div>`}
+function flipc(){const o=G||H;if(!o||o.fl)return;o.fl=true;vib(30);document.querySelector('.fl').classList.add('on');setTimeout(()=>{const r=$('#rest');if(r)r.style.display='block'},450)}
+function dayUI(sub,go){clearInterval(tmr);
+ $('#app').innerHTML=`<div class="card ctr"><div class="moon">☀️</div><h2>議論の時間</h2>${sub||''}<div class="tm" id="tm"></div><p class="mt">話し合って、指さしで投票しましょう</p><button class="g" onclick="TM.end+=30000;tick()">＋30秒</button><button onclick="${go}">処刑を決める</button></div>`;tick();tmr=setInterval(tick,500)}
+function tick(){const e=$('#tm');if(!e)return clearInterval(tmr);const l=Math.max(0,Math.ceil((TM.end-Date.now())/1000));e.textContent=Math.floor(l/60)+':'+String(l%60).padStart(2,'0');e.classList.toggle('hot',l<=10);
+ if(TM.ls!==l){if(l>0&&l<=10)beep(880,.15);if(l==0){beep(200,1);vib([300,100,300])}TM.ls=l}}
+
+/* ===== ワンナイト人狼 ===== */
+function home(){clearInterval(tmr);G=null;H=null;setSky();
+ const need=cfg.n+cfg.cc,tot=Object.values(cfg.cnt).reduce((a,b)=>a+b,0);
+ $('#app').innerHTML=`<button class="g bk" onclick="goTop()">← モード選択</button><h1>🌙 ワンナイト人狼</h1><div id="ib"></div>
+ <div class="card"><h3>人数</h3><div class="ro" style="border:0"><span class="mt">3〜9人</span><div class="st"><button class="g" onclick="sn(-1)">−</button><b>${cfg.n}人</b><button class="g" onclick="sn(1)">＋</button></div></div>
+ <details><summary>名前を入力する（任意）</summary>${Array.from({length:cfg.n},(_,i)=>`<input placeholder="プレイヤー${i+1}" value="${esc(cfg.names[i]||'')}" onchange="cfg.names[${i}]=this.value.trim();sv()">`).join('')}</details></div>
+ <div class="card"><h3>中央に伏せるカード</h3><div class="grid"><button class="${cfg.cc==2?'on':'g'}" onclick="scc(2)">人数＋2枚</button><button class="${cfg.cc==3?'on':'g'}" onclick="scc(3)">人数＋3枚（公式）</button></div></div>
+ <div class="card"><h3>役職　<span class="${tot==need?'ok':'ng'}">${tot} / ${need}枚</span></h3><p class="mt">役職名をタップすると、くわしい説明が開きます。</p>
+ ${RL.map(r=>{const k=r[0];return `<div class="ro"><div style="display:flex;gap:10px;align-items:center;flex:1;min-width:0" onclick="OP=OP=='${k}'?null:'${k}';home()">${rimg(k,'th')}<div><b>${r[1]}</b><div class="mt">${r[4]}</div></div></div><div class="st"><button class="g" onclick="rc('${k}',-1)">−</button><b>${cfg.cnt[k]||0}</b><button class="g" onclick="rc('${k}',1)">＋</button></div></div>${OP==k?`<div class="ln">${det(k)}</div>`:''}`}).join('')}
+ <button class="g" onclick="cfg.cnt=pre(cfg.n,cfg.cc);sv();home()">おすすめの配役に戻す</button></div>
+ <div class="card"><h3>議論の時間</h3><div class="ro" style="border:0"><span class="mt">1〜10分</span><div class="st"><button class="g" onclick="cfg.min=Math.max(1,cfg.min-1);sv();home()">−</button><b>${cfg.min}分</b><button class="g" onclick="cfg.min=Math.min(10,cfg.min+1);sv();home()">＋</button></div></div></div>
+ <div class="card"><h3>そのほか</h3><button class="${cfg.lone?'on':'g'}" onclick="cfg.lone=!cfg.lone;sv();home()">人狼がひとりのとき中央を見る：${cfg.lone?'ON':'OFF'}</button><button class="${cfg.snd?'on':'g'}" onclick="cfg.snd=!cfg.snd;sv();home()">効果音：${cfg.snd?'ON':'OFF'}</button></div>
+ <button onclick="start()" ${tot==need?'':'disabled'}>ゲーム開始</button><button class="g" onclick="rules()">ルールを見る</button>`;ib()}
+function sn(d){cfg.n=Math.min(9,Math.max(3,cfg.n+d));cfg.cnt=pre(cfg.n,cfg.cc);sv();home()}
+function scc(c){cfg.cc=c;cfg.cnt=pre(cfg.n,c);sv();home()}
+function rc(k,d){const m=RK[k][3],v=(cfg.cnt[k]||0)+d;cfg.cnt[k]=Math.min(m,Math.max(0,v));sv();home()}
+function start(){const d=[];Object.entries(cfg.cnt).forEach(([k,v])=>{for(let i=0;i<v;i++)d.push(k)});shuf(d);const n=cfg.n;
+ G={n,cc:cfg.cc,lone:cfg.lone,names:Array.from({length:n},(_,i)=>cfg.names[i]||'プレイヤー'+(i+1)),cards:d.map(r=>({r})),ph:'n1',i:0,sh:false,fl:false,rs:false,CH:Array.from({length:n},()=>({sel:[],dp:null,mode:null})),INFO:[],xs:[],dead:[]};H=null;draw()}
+const cn=k=>'中央'+(k+1);
+const nmc=c=>c.c?`ドッペルゲンガー（${RK[c.c][1]}）`:RK[c.r][1];
+function ER1(i){const c=G.cards[i];if(c.r=='doppel'&&G.CH[i].dp!=null){const t=G.cards[G.CH[i].dp].r;return t=='doppel'?'doppel':t}return c.r}
+const need=(e,i)=>{if(e=='wolf')return G.lone&&!G.cards.slice(0,G.n).some((c,j)=>c.r=='wolf'&&j!=i)?'c1':null;return({seer:'seer',rob:'p1',trb:'p2',drk:'c1'})[e]};
+function draw(){if(!G)return goTop();setSky();if(G.pp!==G.ph){G.pp=G.ph;const b={n1:'🌙 夜になりました',day:'☀️ 朝になりました',ex:'🗳️ 処刑を決める時間です'}[G.ph];if(b)banner(b)}
+ const p=G.ph,A=$('#app');
+ if(p=='day')return dayUI(G.cards.some(c=>c.r=='mayor')?'<p class="mt">村長がいます。村長は2票分で数えてください。</p>':'',"clearInterval(tmr);G.ph='ex';G.xs=[];draw()");
+ if(p=='res')return res();
+ if(p=='ex'){A.innerHTML=ex();return}
+ if(p=='hun'){A.innerHTML=hunUI();return}
+ const i=G.i;A.innerHTML=G.sh?n1w(i):hand('夜：あなたの番（'+(i+1)+' / '+G.n+'）',PN(i),"G.sh=true;G.fl=false;draw()")}
+function n1w(i){const c=G.cards[i];return flipHtml(c.r,RK[c.r][1],G.fl)+`<div id="rest" style="display:${G.fl?'block':'none'}">${n1(i)}</div>`}
+function n1(i){const c=G.cards[i],ch=G.CH[i];let h=`<div class="card"><h3>${RK[c.r][1]}の説明</h3><div class="ln" style="margin:0">${det(c.r)}</div></div>`;
+ if(G.rs)return h+`<div class="card"><h3>夜の結果</h3>${G.INFO[i].map(t=>`<div class="ln">${esc(t)}</div>`).join('')}<br><button onclick="nextP()">確認した。次の人へ</button></div>`;
+ if(c.r=='doppel'&&ch.dp==null)return h+`<div class="card"><h3>コピーする人を選ぶ</h3>${pl(i,[],'dpick')}</div>`;
+ const e=ER1(i);
+ if(c.r=='doppel')h+=`<div class="card"><p>${esc(PN(ch.dp))}のカードは「${RK[G.cards[ch.dp].r][1]}」でした。</p><p class="mt">あなたは「${RK[e][1]}」になりました。</p></div>`;
+ const t=need(e,i);
+ if(!t)return h+`<div class="card"><button onclick="cfm()">確認する</button></div>`;
+ const s=ch.sel;let f='',ok=false;
+ if(t=='seer'){ch.mode=ch.mode||'p';f=`<div class="grid"><button class="${ch.mode=='p'?'on':'g'}" onclick="smode('p')">人のカード</button><button class="${ch.mode=='c'?'on':'g'}" onclick="smode('c')">中央2枚</button></div><br>`+(ch.mode=='p'?pl(i,s,'tg1'):ctr(s,2));ok=s.length==(ch.mode=='p'?1:2)}
+ else if(t=='p1'){f='<p class="mt">交換する相手を選ぶ（選ばなければ何もしない）</p>'+pl(i,s,'tg1');ok=true}
+ else if(t=='p2'){f='<p class="mt">交換する2人を選ぶ</p>'+pl(i,s,'tg2');ok=s.length==2}
+ else if(e=='wolf'){f='<p class="mt">人狼はあなただけです。中央のカードを1枚選んで見ます</p>'+ctr(s,1);ok=s.length==1}
+ else{f='<p class="mt">交換する中央カードを選ぶ</p>'+ctr(s,1);ok=s.length==1}
+ return h+`<div class="card">${f}<button onclick="cfm()" ${ok?'':'disabled'}>決定</button></div>`}
+function ctr(s,m){return `<div class="grid" style="grid-template-columns:repeat(${G.cc},1fr)">${Array.from({length:G.cc},(_,k)=>k).map(k=>`<button class="g ${s.includes(k)?'on':''}" onclick="tgc(${k},${m})">${cn(k)}</button>`).join('')}</div>`}
+function dpick(j){G.CH[G.i].dp=j;G.CH[G.i].sel=[];draw()}
+function smode(m){const ch=G.CH[G.i];ch.mode=m;ch.sel=[];draw()}
+function tg1(j){const s=G.CH[G.i].sel;G.CH[G.i].sel=s[0]==j?[]:[j];draw()}
+function tg2(j){const ch=G.CH[G.i],s=ch.sel;ch.sel=s.includes(j)?s.filter(x=>x!=j):[...s,j].slice(-2);draw()}
+function tgc(k,m){const ch=G.CH[G.i],s=ch.sel;ch.sel=s.includes(k)?s.filter(x=>x!=k):[...s,k].slice(-m);draw()}
+function info(i){const n=G.n,c=G.cards,ch=G.CH[i],e=ER1(i),s=ch.sel||[],L=[],N=j=>G.names[j];
+ const orig=r=>c.slice(0,n).map((x,j)=>x.r==r?j:-1).filter(j=>j>=0);
+ if(c[i].r=='doppel')L.push(e=='doppel'?'コピーできませんでした':`コピーした役職は「${RK[e][1]}」です`);
+ if(e=='wolf'){const o=orig('wolf').filter(j=>j!=i);if(o.length)L.push('仲間の人狼：'+o.map(N).join('、'));else{L.push('人狼はあなただけです');if(s.length)L.push(`${cn(s[0])}は「${RK[c[n+s[0]].r][1]}」でした`)}}
+ if(e=='mad'){const w=orig('wolf');L.push(w.length?'人狼：'+w.map(N).join('、'):'プレイヤーの中に人狼はいません')}
+ if(e=='mason'){const o=orig('mason').filter(j=>j!=i);L.push(o.length?'もう1人のフリーメイソン：'+o.map(N).join('、'):'他のフリーメイソンはいません（中央にいます）')}
+ if(e=='seer'){if(ch.mode=='c')L.push(`${cn(s[0])}は「${RK[c[n+s[0]].r][1]}」、${cn(s[1])}は「${RK[c[n+s[1]].r][1]}」でした`);else L.push(`${N(s[0])}のカードは「${RK[c[s[0]].r][1]}」でした`)}
+ if(e=='rob'){if(s.length)L.push(`${N(s[0])}のカードは「${RK[c[s[0]].r][1]}」でした。交換して、あなたの新しいカードは「${RK[c[s[0]].r][1]}」です`);else L.push('誰とも交換しませんでした')}
+ if(e=='trb')L.push(`${N(s[0])}と${N(s[1])}のカードを交換します`);
+ if(e=='drk')L.push(`${cn(s[0])}と交換します（中身は分かりません）`);
+ if(!L.length)L.push('夜の行動はありません');
+ return L}
+function cfm(){G.INFO[G.i]=info(G.i);G.rs=true;vib(30);draw()}
+function nextP(){G.sh=false;G.fl=false;G.rs=false;G.i++;if(G.i>=G.n){finalize();G.i=0;G.ph='day';TM={end:Date.now()+cfg.min*60000,ls:null}}draw();window.scrollTo(0,0)}
+function finalize(){const n=G.n,pos=G.cards.map(c=>({r:c.r,c:null})),CH=G.CH,sw=(a,b)=>{[pos[a],pos[b]]=[pos[b],pos[a]]};
+ const run=(i,r)=>{const s=CH[i].sel||[];if(r=='rob'&&s.length)sw(i,s[0]);if(r=='trb')sw(s[0],s[1]);if(r=='drk')sw(i,n+s[0])};
+ for(let i=0;i<n;i++){if(G.cards[i].r!='doppel')continue;const e=ER1(i);if(e=='doppel')continue;pos[i].c=e;if(['rob','trb','drk'].includes(e))run(i,e)}
+ ['rob','trb','drk'].forEach(r=>{for(let i=0;i<n;i++)if(G.cards[i].r==r)run(i,r)});
+ G.fin=pos}
+function ex(){const m=G.cards.some(c=>c.r=='mayor');
+ return `<div class="card"><h3>処刑する人を決める</h3><p class="mt">指さしで最多票だった人をタップします（同票なら全員）。${m?'<br>村長は2票分で数えてください。':''}</p>${pl(-1,G.xs,'xt',false)}<button onclick="exOk()" ${G.xs.length?'':'disabled'}>この人を処刑する</button>${m?'':'<button class="g" onclick="exNone()">誰も処刑しない</button>'}</div>`}
+function xt(j){G.xs=G.xs.includes(j)?G.xs.filter(x=>x!=j):[...G.xs,j];draw()}
+function exOk(){G.dead=[...G.xs];G.hdone=[];nextH()}
+function exNone(){G.dead=[];G.hdone=[];nextH()}
+function nextH(){const e=i=>G.fin[i].c||G.fin[i].r;const h=G.dead.find(i=>e(i)=='hun'&&!G.hdone.includes(i));if(h===undefined){G.ph='res';draw();return}G.hcur=h;G.ph='hun';draw()}
+function hunUI(){const h=G.hcur;return `<div class="card"><h3>狩人の道連れ</h3><p>狩人の${esc(PN(h))}さんが、指さしていた相手を選んでください。</p>${pl(h,[],'hp')}<button class="g" onclick="hp(null)">指さしていなかった</button></div>`}
+function hp(j){if(j!==null&&!G.dead.includes(j))G.dead.push(j);G.hdone.push(G.hcur);nextH()}
+function judge(){const n=G.n,F=G.fin,e=i=>F[i].c||F[i].r,d=G.dead,isM=x=>x=='mad'||x=='mad2',all=Array.from({length:n},(_,i)=>e(i));
+ const wolves=all.includes('wolf'),minions=all.some(isM),tan=d.some(i=>e(i)=='tan');
+ let wv=false,ww=false;
+ if(wolves){wv=d.some(i=>e(i)=='wolf');ww=!wv&&!tan}
+ else if(minions){wv=d.some(i=>isM(e(i)))||d.length==0;ww=!wv&&!tan}
+ else wv=d.length==0;
+ return{d,wv,ww,wt:tan,e,isM}}
+function res(){clearInterval(tmr);const j=judge(),n=G.n,w=[];if(j.wv)w.push('村人陣営');if(j.ww)w.push('人狼陣営');if(j.wt)w.push('吊り人');
+ $('#app').innerHTML=`<div class="win">${w.length?w.join('と')+'の勝利！':'全員の負け…'}</div>
+ <div class="card"><h3>処刑された人</h3><p>${j.d.length?j.d.map(i=>esc(PN(i))).join('、'):'誰も処刑されませんでした'}</p></div>
+ <div class="card"><h3>結果</h3>${G.names.map((nm,i)=>{const e=j.e(i),t=e=='wolf'||j.isM(e)?'W':e=='tan'?'T':'V',win=(t=='V'&&j.wv)||(t=='W'&&j.ww)||(t=='T'&&j.wt),f=G.fin[i],c0=G.cards[i];
+  return `<div class="rs"><div style="display:flex;gap:10px;align-items:center">${rimg(f.r,'th')}<div><b>${esc(nm)}</b>${j.d.includes(i)?' 💀':''}<div class="mt">最初：${RK[c0.r][1]} → 最後：${nmc(f)}</div></div></div><span class="tag ${win?'w':'l'}">${win?'勝ち':'負け'}</span></div>`}).join('')}</div>
+ <div class="card"><h3>中央のカード</h3>${Array.from({length:G.cc},(_,k)=>`<div class="rs"><div style="display:flex;gap:10px;align-items:center">${rimg(G.fin[n+k].r,'th')}<span>${cn(k)}</span></div><b>${nmc(G.fin[n+k])}</b></div>`).join('')}</div>
+ <button onclick="start()">もう一度（同じ設定）</button><button class="g" onclick="home()">設定に戻る</button>`;window.scrollTo(0,0);if(w.length){conf();vib([200,80,200,80,400])}}
+function rules(){$('#rl').className='on';$('#rl').innerHTML=`<h1>ワンナイト人狼のルール</h1><div class="card"><h3>基本</h3><p class="mt" style="line-height:1.8">・全員に役職カードが1枚ずつ配られ、余りの2枚か3枚（設定で選べます）が中央に伏せられます。<br>・夜は1回だけ。スマホを席順に回し、自分の番でカードをめくり、役職を確認して、その場で行動して結果を見ます。<br>・カードの交換（怪盗・騒ぎ屋・酔っぱらい）は、全員の行動が終わったあとに、公式の順番（ドッペルゲンガー → 怪盗 → 騒ぎ屋 → 酔っぱらい）でまとめて行われます。最後に手元にあるカードが、本当の役職です。<br>・占い師と怪盗が見るのは、夜の最初のカードです。<br>・人狼・狂人・フリーメイソンが見る仲間は、最初からその役職だった人だけです。ドッペルゲンガーがコピーしても、元からの仲間には見えません。<br>・昼に議論し、実際に指さしで投票します。アプリには、最多票の人（同数なら全員）を入力します。全員が1票以下なら誰も処刑されません。村長がいるときは、必ず誰かが2票以上になります。</p></div><div class="card"><h3>勝敗</h3><p class="mt" style="line-height:1.8">・人狼が1人でも処刑されれば、村人陣営の勝ち。<br>・人狼がいて、誰も人狼が処刑されなければ、人狼陣営の勝ち（狂人も同じ陣営）。<br>・吊り人が処刑されれば、吊り人の勝ち。そのとき人狼も処刑されていれば、村人陣営も勝ち。人狼が処刑されていなければ、人狼陣営は負け。<br>・プレイヤーに人狼がいない場合：誰も処刑されなければ村人陣営の勝ち。狂人がいるときは、狂人を処刑すれば村人陣営の勝ち、他の人が処刑されれば狂人（人狼陣営）の勝ち。狂人もいなければ、誰かが処刑されると全員の負け。<br>・狩人は、処刑されると自分が指さしていた相手も道連れにします。</p></div><div class="card"><h3>役職</h3>${RL.map(r=>`<div class="ro" style="display:block"><div style="display:flex;gap:10px;align-items:center;margin-bottom:6px">${rimg(r[0],'th')}<b>${r[1]}</b></div><div class="mt" style="line-height:1.7">${det(r[0])}</div></div>`).join('')}</div><button onclick="$('#rl').className=''">閉じる</button>`;$('#rl').scrollTop=0}
+
+/* ===== 普通の人狼 ===== */
+function home2(){clearInterval(tmr);G=null;H=null;setSky();
+ const n=c2.n,tot=Object.values(c2.cnt).reduce((a,b)=>a+b,0),w=c2.cnt.wolf||0,ok=tot==n&&w>=1;
+ $('#app').innerHTML=`<button class="g bk" onclick="goTop()">← モード選択</button><h1>🐺 人狼（複数日）</h1><div id="ib"></div>
+ <div class="card"><h3>人数</h3><div class="ro" style="border:0"><span class="mt">5〜12人</span><div class="st"><button class="g" onclick="sn2(-1)">−</button><b>${n}人</b><button class="g" onclick="sn2(1)">＋</button></div></div>
+ <details><summary>名前を入力する（任意）</summary>${Array.from({length:n},(_,i)=>`<input placeholder="プレイヤー${i+1}" value="${esc(c2.names[i]||'')}" onchange="c2.names[${i}]=this.value.trim();sv2()">`).join('')}</details></div>
+ <div class="card"><h3>役職　<span class="${ok?'ok':'ng'}">${tot} / ${n}人分</span></h3><p class="mt">人狼は最低1人必要です。役職名をタップすると説明が開きます。</p>
+ ${RL2.map(r=>{const k=r[0];return `<div class="ro"><div style="display:flex;gap:10px;align-items:center;flex:1;min-width:0" onclick="OP2=OP2=='${k}'?null:'${k}';home2()">${rimg(k,'th')}<div><b>${r[1]}</b><div class="mt">${r[3]}</div></div></div><div class="st"><button class="g" onclick="rc2('${k}',-1)">−</button><b>${c2.cnt[k]||0}</b><button class="g" onclick="rc2('${k}',1)">＋</button></div></div>${OP2==k?`<div class="ln">${det2(k)}</div>`:''}`}).join('')}
+ <button class="g" onclick="c2.cnt={...PRE2[c2.n]};sv2();home2()">おすすめの配役に戻す</button></div>
+ <div class="card"><h3>ルール設定</h3><button class="${c2.first?'on':'g'}" onclick="c2.first=!c2.first;sv2();home2()">初日の夜の襲撃：${c2.first?'あり':'なし'}</button><button class="${c2.sg?'on':'g'}" onclick="c2.sg=!c2.sg;sv2();home2()">騎士が自分を守る：${c2.sg?'できる':'できない'}</button><button class="${c2.rg?'on':'g'}" onclick="c2.rg=!c2.rg;sv2();home2()">騎士の連続ガード：${c2.rg?'できる':'できない'}</button>
+ <div class="ro" style="border:0"><span class="mt">議論の時間</span><div class="st"><button class="g" onclick="c2.min=Math.max(1,c2.min-1);sv2();home2()">−</button><b>${c2.min}分</b><button class="g" onclick="c2.min=Math.min(10,c2.min+1);sv2();home2()">＋</button></div></div>
+ <button class="${cfg.snd?'on':'g'}" onclick="cfg.snd=!cfg.snd;sv();home2()">効果音：${cfg.snd?'ON':'OFF'}</button></div>
+ <button onclick="start2()" ${ok?'':'disabled'}>ゲーム開始</button><button class="g" onclick="rules2()">ルールを見る</button>`;ib()}
+function sn2(d){c2.n=Math.min(12,Math.max(5,c2.n+d));c2.cnt={...PRE2[c2.n]};sv2();home2()}
+function rc2(k,d){const m=RK2[k][2],v=(c2.cnt[k]||0)+d;c2.cnt[k]=Math.min(m,Math.max(0,v));sv2();home2()}
+const PN2=j=>H.names[j];
+function start2(){const d=[];Object.entries(c2.cnt).forEach(([k,v])=>{for(let i=0;i<v;i++)d.push(k)});shuf(d);const n=c2.n;
+ H={n,names:Array.from({length:n},(_,i)=>c2.names[i]||'プレイヤー'+(i+1)),roles:d,alive:Array(n).fill(true),day:1,ph:'rv',i:0,sh:false,fl:false,sel:null,rs:null,atk:[],guard:null,lastGuard:null,lastExec:null,killed:null,xr:null};G=null;draw2()}
+const alive2=()=>H.alive.map((a,j)=>a?j:-1).filter(j=>j>=0);
+const pl2=(list,sel,fn)=>`<div class="grid">${list.map(j=>`<button class="g ${sel===j?'on':''}" onclick="${fn}(${j})">${esc(H.names[j])}</button>`).join('')}</div>`;
+function win2(){let w=0,h=0;H.roles.forEach((r,i)=>{if(!H.alive[i])return;r=='wolf'?w++:h++});return w==0?'V':w>=h?'W':null}
+function draw2(){if(!H)return goTop();setSky();if(H.pp!==H.ph){H.pp=H.ph;const b={nt:'🌙 夜 '+H.day+'日目',mn:'☀️ 朝になりました',ex2:'🗳️ 処刑を決める時間です'}[H.ph];if(b)banner(b)}
+ const p=H.ph,A=$('#app');
+ if(p=='dy')return dayUI(`<p class="mt">${H.day}日目　生存者：${alive2().map(j=>esc(H.names[j])).join('、')}</p>`,"clearInterval(tmr);H.ph='ex2';H.sel=null;draw2()");
+ if(p=='mn'){A.innerHTML=mn();return}
+ if(p=='ex2'){A.innerHTML=ex2();return}
+ if(p=='xr'){A.innerHTML=xr();return}
+ if(p=='end')return end2();
+ const i=H.i;A.innerHTML=H.sh?(p=='rv'?rv(i):nt2(i)):hand(p=='rv'?'最初の確認（'+(i+1)+' / '+H.n+'）':'夜 '+H.day+'日目',H.names[i],"H.sh=true;H.fl=false;draw2()")}
+function rv(i){const r=H.roles[i],wl=H.roles.map((x,j)=>x=='wolf'&&j!=i?j:-1).filter(j=>j>=0),sh=H.roles.map((x,j)=>x=='sharer'&&j!=i?j:-1).filter(j=>j>=0);
+ let x='';if(r=='wolf')x=wl.length?'仲間の人狼：'+wl.map(PN2).join('、'):'人狼はあなただけです';if(r=='sharer')x=sh.length?'もう1人の共有者：'+sh.map(PN2).join('、'):'共有者はあなただけです';
+ return flipHtml(r,RK2[r][1],H.fl)+`<div id="rest" style="display:${H.fl?'block':'none'}"><div class="card"><h3>${RK2[r][1]}の説明</h3><div class="ln" style="margin:0">${det2(r)}</div>${x?`<div class="ln">${esc(x)}</div>`:''}<br><button onclick="nextRv()">確認した。次の人へ</button></div></div>`}
+function nextRv(){H.sh=false;H.fl=false;H.i++;if(H.i>=H.n){H.ph='nt';H.i=H.alive.findIndex(a=>a)}draw2();window.scrollTo(0,0)}
+function nt2(i){const r=H.roles[i],d=H.day;
+ let h=`<div class="card"><h3>夜 ${d}日目</h3><div class="ro" style="border:0">${rimg(r,'th')}<div style="flex:1;margin-left:10px"><b>${RK2[r][1]}</b><div class="mt">${RK2[r][3]}</div></div></div></div>`;
+ if(H.rs)return h+`<div class="card">${H.rs.map(t=>`<div class="ln">${esc(t)}</div>`).join('')}<br><button onclick="nextN()">次の人へ</button></div>`;
+ if(r=='medium')return h+`<div class="card"><p class="mt">前日の処刑について確認します</p><button onclick="cfm2()">確認する</button></div>`;
+ const al=alive2();let list=al,note='夜の行動はありません。他の人にばれないよう、ダミーで誰かを選んで決定してください。';
+ if(r=='wolf'){if(d==1&&!c2.first)note='初日の夜は襲撃できません。ダミーで誰かを選んで決定してください。';else{list=al.filter(j=>H.roles[j]!='wolf');note='襲撃する人を選ぶ（人狼の意見が割れたら、選ばれた中からランダム）'}}
+ if(r=='seer'){list=al.filter(j=>j!=i);note='占う人を選ぶ'}
+ if(r=='hun'){list=al.filter(j=>(c2.sg||j!=i)&&(c2.rg||j!==H.lastGuard));note='今夜守る人を選ぶ'}
+ if(!list.length)list=al;
+ return h+`<div class="card"><p class="mt">${note}</p>${pl2(list,H.sel,'sl2')}<button onclick="cfm2()" ${H.sel===null?'disabled':''}>決定</button></div>`}
+function sl2(j){H.sel=j;draw2()}
+function cfm2(){const i=H.i,r=H.roles[i],d=H.day,s=H.sel;let L=['決定しました。'];
+ if(r=='wolf'&&!(d==1&&!c2.first))H.atk.push(s);
+ if(r=='hun')H.guard=s;
+ if(r=='seer')L=[`${H.names[s]}さんは【${H.roles[s]=='wolf'?'人狼':'人間'}】でした`];
+ if(r=='medium'){const x=H.lastExec;L=[x?`前日に処刑された${H.names[x.i]}さんは【${x.wolf?'人狼':'人間'}】でした`:'前日に処刑された人はいません']}
+ H.rs=L;vib(30);draw2()}
+function nextN(){H.rs=null;H.sel=null;H.sh=false;let j=H.i+1;while(j<H.n&&!H.alive[j])j++;if(j>=H.n){nightEnd();return}H.i=j;draw2();window.scrollTo(0,0)}
+function nightEnd(){const u=[...new Set(H.atk)];let k=null;if(u.length)k=u[Math.floor(Math.random()*u.length)];
+ H.killed=null;if(k!==null&&k!==H.guard){H.alive[k]=false;H.killed=k}
+ H.lastGuard=H.guard;H.guard=null;H.atk=[];H.ph='mn';draw2()}
+function mn(){const k=H.killed,w=win2();return `<div class="card ctr"><div class="moon">☀️</div><h2>朝になりました</h2><p style="font-size:18px">${k!==null?esc(H.names[k])+'さんが襲撃され、亡くなりました。':'昨晩は誰も亡くなりませんでした。'}</p><p class="mt">生存者：${alive2().map(j=>esc(H.names[j])).join('、')}</p><button onclick="${w?"H.ph='end';draw2()":"startDay2()"}">${w?'結果を見る':'議論へ'}</button></div>`}
+function startDay2(){TM={end:Date.now()+c2.min*60000,ls:null};H.ph='dy';draw2()}
+function ex2(){return `<div class="card"><h3>処刑する人を決める</h3><p class="mt">指さしの結果、処刑される人をタップします</p>${pl2(alive2(),H.sel,'sl2')}<button onclick="exe()" ${H.sel===null?'disabled':''}>処刑する</button><button class="g" onclick="exe(1)">誰も処刑しない</button></div>`}
+function exe(no){const s=H.sel;if(no||s===null){H.lastExec=null;H.xr=null}else{H.alive[s]=false;H.lastExec={i:s,wolf:H.roles[s]=='wolf'};H.xr=s}H.ph='xr';draw2()}
+function xr(){const w=win2(),s=H.xr;return `<div class="card ctr"><div class="moon">⚖️</div><h2>${s!==null?esc(H.names[s])+'さんが処刑されました':'今日は誰も処刑されませんでした'}</h2><p class="mt">生存者：${alive2().map(j=>esc(H.names[j])).join('、')}</p><button onclick="${w?"H.ph='end';draw2()":"nextNight()"}">${w?'結果を見る':'夜へ'}</button></div>`}
+function nextNight(){H.day++;H.ph='nt';H.i=H.alive.findIndex(a=>a);H.sh=false;H.sel=null;H.rs=null;draw2()}
+function end2(){clearInterval(tmr);const w=win2();
+ $('#app').innerHTML=`<div class="win">${w=='V'?'村人陣営の勝利！':'人狼陣営の勝利！'}</div><div class="card"><h3>全員の役職（${H.day}日目で終了）</h3>${H.names.map((nm,i)=>{const r=H.roles[i],t=r=='wolf'||r=='mad2'?'W':'V';return `<div class="rs"><div style="display:flex;gap:10px;align-items:center">${rimg(r,'th')}<div><b>${esc(nm)}</b>${H.alive[i]?'':' 💀'}<div class="mt">${RK2[r][1]}</div></div></div><span class="tag ${t==w?'w':'l'}">${t==w?'勝ち':'負け'}</span></div>`}).join('')}</div><button onclick="start2()">もう一度（同じ設定）</button><button class="g" onclick="home2()">設定に戻る</button>`;window.scrollTo(0,0);conf();vib([200,80,200,80,400])}
+function rules2(){$('#rl').className='on';$('#rl').innerHTML=`<h1>人狼（複数日）のルール</h1><div class="card"><h3>流れ</h3><p class="mt" style="line-height:1.8">1. 最初に、全員が自分の役職を確認します（人狼は仲間を、共有者は相方を知ります）。<br>2. 夜：生きている人に席順でスマホを回し、役職ごとの行動をします。行動のない役職も、ばれないようにダミーで選びます。<br>3. 朝：襲撃された人がいれば発表されます。守りが成功したか、襲撃がなかったかは分かりません。<br>4. 昼：議論して、指さしで投票し、処刑される人をアプリで選びます。誰も処刑しない選択もできます。<br>5. 勝敗が決まるまで、夜と昼をくり返します。</p></div><div class="card"><h3>勝敗</h3><p class="mt" style="line-height:1.8">・人狼が全員いなくなれば、村人陣営の勝ち。<br>・人狼の数が、人間（人狼以外、狂人も含む）の数以上になれば、人狼陣営の勝ち。</p></div><div class="card"><h3>設定できるルール</h3><p class="mt" style="line-height:1.8">・初日の夜の襲撃（初期値：なし）<br>・騎士が自分を守れるか（初期値：できない）<br>・騎士が連続で同じ人を守れるか（初期値：できない）</p></div><div class="card"><h3>役職</h3>${RL2.map(r=>`<div class="ro" style="display:block"><div style="display:flex;gap:10px;align-items:center;margin-bottom:6px">${rimg(r[0],'th')}<b>${r[1]}</b></div><div class="mt" style="line-height:1.7">${det2(r[0])}</div></div>`).join('')}</div><button onclick="$('#rl').className=''">閉じる</button>`;$('#rl').scrollTop=0}
+
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+applyBg();goTop();iLoad().then(()=>{applyBg();if(!G&&!H&&$('#rl').className!='on')goTop()});
+</script></body></html>
